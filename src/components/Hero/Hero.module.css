@@ -1,0 +1,11 @@
+.Hero {
+  background-color: aquamarine;
+}
+
+.StravaButton {
+  transition: ease-in 0.2s transform;
+}
+
+.StravaButton:hover {
+  transform: scale(1.04);
+}
