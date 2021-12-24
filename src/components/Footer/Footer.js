@@ -4,9 +4,7 @@ import styles from './Footer.module.css';
 function Footer() {
   return (
     <div className={styles.Footer}>
-      <div >
-        Metabike.
-      </div>
+      <div>Metabike.</div>
       <div className={styles.StravaLogo}>
         <StravaLogo />
       </div>
