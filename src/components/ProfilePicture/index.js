@@ -1,3 +1,3 @@
-import Hero from './Hero';
+import ProfilePicture from './ProfilePicture';
 
-export default Hero;
+export default ProfilePicture;

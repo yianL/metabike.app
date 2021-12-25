@@ -1,5 +1,29 @@
 .Hero {
-  background-color: aquamarine;
+  composes: backgrounColorSecondary from global;
+  min-width: 700px;
+}
+
+.DefaultHeroContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.LinkStrava {
+  margin: 20px 0;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.LinkStrava a {
+  height: 48px;
+}
+
+.Start {
+  display: flex;
+  align-items: flex-end;
 }
 
 .StravaButton {
@@ -8,4 +32,17 @@
 
 .StravaButton:hover {
   transform: scale(1.04);
+}
+
+:global(#finger) {
+  animation: bounce 0.8s ease-in 0s alternate infinite;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
 }

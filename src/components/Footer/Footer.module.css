@@ -1,4 +1,8 @@
 .Footer {
+  color: #888888;
+}
+
+.Brand {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -7,9 +11,24 @@
   left: 10px;
   bottom: 0;
   font-family: 'lcddot';
-  font-size: 5em;
+  font-size: 3em;
+  user-select: none;
 }
 
 .StravaLogo {
-  width: 1em;
+  width: 5rem;
+  opacity: 0.6;
+}
+
+.BikeLogo {
+  position: fixed;
+  right: -50px;
+  bottom: -130px;
+  opacity: 0.1;
+}
+
+.BikeLogo svg {
+  fill: #888888;
+  width: 400px;
+  height: 400px;
 }

@@ -1,8 +1,12 @@
 .App {
+  composes: backgrounColorPrimary colorPrimary from global;
+
   text-align: center;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 10vh;
+
+  min-height: 100vh;
 }
