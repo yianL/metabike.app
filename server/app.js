@@ -1,23 +1,41 @@
-const express = require('express');
-const path = require('path');
-const { createServer } = require('http');
+require('dotenv').config();
 
-const port = process.env.PORT || 3000;
-const isProduction = process.env.NODE_ENV === 'production';
+const express = require('express');
+const passport = require('passport');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session');
+const authRouter = require('./routes/auth');
+const { store } = require('./src/firebase');
+
+require('./src/auth')();
 
 const app = express();
-const httpServer = createServer(app);
 
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../build')));
 
-app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname, '../build', 'index.html'));
+app.use(
+  session({
+    secret: 'supa secret',
+    store: store,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/', authRouter);
+
+// Error handler
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.send(500, 'Ooops!');
 });
 
-httpServer.listen(port, () => {
-  console.log(
-    `Server listening at 127.0.0.1:${port} (${
-      isProduction ? 'Production' : 'Development'
-    })`
-  );
-});
+module.exports = app;

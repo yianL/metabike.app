@@ -20,7 +20,7 @@ function DefaultHero() {
         <ProfilePicture />
         <h1>See how far you've biked in the virtual world!</h1>
         <div className={styles.LinkStrava}>
-          <a href="#">
+          <a href="/login/federated/strava" role="button">
             <StravaButton className={styles.StravaButton} />
           </a>
           <div className={styles.Start}>
