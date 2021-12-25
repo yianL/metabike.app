@@ -6,8 +6,10 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require('express-session');
-const authRouter = require('./routes/auth');
 const { store } = require('./src/firebase');
+
+const authRouter = require('./routes/auth');
+const apiV1Router = require('./routes/apiV1');
 
 require('./src/auth')();
 
@@ -30,6 +32,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use('/api/v1', apiV1Router);
 app.use('/', authRouter);
 
 // Error handler
