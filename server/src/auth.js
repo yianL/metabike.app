@@ -1,5 +1,7 @@
 const passport = require('passport');
 const StravaStrategy = require('passport-strava').Strategy;
+const moment = require('moment');
+const { Timestamp } = require('@google-cloud/firestore');
 const { database, FieldValue } = require('./firebase');
 
 module.exports = function () {
@@ -32,7 +34,9 @@ module.exports = function () {
         };
 
         if (!doc.exists) {
-          mappedUserProfile.createdAt = _json.created_at;
+          mappedUserProfile.createdAt = Timestamp.fromMillis(
+            moment(_json.created_at).valueOf()
+          );
           mappedUserProfile.stravaCursor = {
             syncPending: true,
             lastEventTimestamp: 0,

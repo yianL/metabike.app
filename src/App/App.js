@@ -43,7 +43,7 @@ class App extends React.Component {
     return (
       <div className={styles.App}>
         {initialized && <Hero profile={profile} />}
-        {initialized &&
+        {profile &&
           profile.bikes &&
           Object.keys(profile.bikes).map((key) => (
             <BikeCard key={key} bike={profile.bikes[key]} />
