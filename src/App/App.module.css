@@ -1,6 +1,5 @@
 .App {
-  composes: backgrounColorPrimary colorPrimary from global;
-
+  background-color: var(--metabike-color-light);
   text-align: center;
   position: relative;
   display: flex;

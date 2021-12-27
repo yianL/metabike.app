@@ -1,19 +1,19 @@
-import './BikeCard.css';
+import Card from '../Card';
+import { ReactComponent as BikeLogo } from '../../images/pedal_bike_black_48dp.svg';
+import styles from './BikeCard.module.css';
 
-function BikeCard() {
+function BikeCard({ bike }) {
+  const { name } = bike;
   return (
-    <div className="BikeCard">
-      <div className="ProfilePic">
-        <img
-          src="https://dgalywyr863hv.cloudfront.net/pictures/athletes/32534779/9702793/3/large.jpg"
-          alt="profile_picture"
-        />
+    <Card className={styles.BikeCard}>
+      <div className={styles.Avatar}>
+        <BikeLogo />
       </div>
       <div>
-        <p>See how far you've biked in the virtual world!</p>
-        <p>Link your Strava profile to get started.👆</p>
+        <h2>{name}</h2>
+        <hr />
       </div>
-    </div>
+    </Card>
   );
 }
 

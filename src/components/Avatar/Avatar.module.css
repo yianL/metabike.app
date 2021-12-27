@@ -1,4 +1,4 @@
-.ProfilePicture {
+.Avatar {
   background-color: #eb7b59;
   width: 10rem;
   height: 10rem;
@@ -10,7 +10,7 @@
   justify-content: center;
 }
 
-.ProfilePicture img {
+.Avatar img {
   width: 100%;
   height: 100%;
 }

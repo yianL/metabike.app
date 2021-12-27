@@ -1,6 +1,6 @@
 const passport = require('passport');
 const StravaStrategy = require('passport-strava').Strategy;
-const { database } = require('./firebase');
+const { database, FieldValue } = require('./firebase');
 
 module.exports = function () {
   passport.use(
@@ -12,21 +12,55 @@ module.exports = function () {
         state: true,
       },
       async function (accessToken, refreshToken, profile, cb) {
-        const userId = profile.id;
-        const userDocument = database.doc(`users/${userId}`);
+        const { id, _json } = profile;
+        const userDocument = database.doc(`users/${id}`);
         const doc = await userDocument.get();
 
-        if (!doc.exists) {
-          await userDocument.set({
-            name: profile.name,
-            city: profile._json.city,
-          });
-        }
-
-        await userDocument.update({
+        const mappedUserProfile = {
+          firstname: _json.firstname,
+          lastname: _json.lastname,
+          location: {
+            city: _json.city,
+            state: _json.state,
+            country: _json.country,
+          },
+          sex: _json.sex,
           accessToken: accessToken,
           refreshToken: refreshToken,
-        });
+          updatedAt: FieldValue.serverTimestamp(),
+          avatar: _json.profile,
+        };
+
+        if (!doc.exists) {
+          mappedUserProfile.createdAt = _json.created_at;
+          mappedUserProfile.stravaCursor = {
+            syncPending: true,
+            lastEventTimestamp: 0,
+          };
+          mappedUserProfile.bikes = _json.bikes.reduce((prev, curr) => {
+            prev[curr.id] = {
+              primary: curr.primary,
+              name: curr.name,
+              nickname: curr.nickname,
+              retired: curr.retired,
+              updatedAt: FieldValue.serverTimestamp(),
+              totalDistanceMeters: curr.distance,
+              virtualDistanceMeters: 0,
+              totalElevationGainMeters: 0,
+              virtualElevationGainMeters: 0,
+              totalTimeOnBikeMinutes: 0,
+              totalKudos: 0,
+              totalPRSmashed: 0,
+            };
+            return prev;
+          }, {});
+
+          await userDocument.set(mappedUserProfile);
+        } else {
+          // TODO: update bikes
+
+          await userDocument.update(mappedUserProfile);
+        }
 
         return cb(null, profile);
       }
@@ -34,23 +68,16 @@ module.exports = function () {
   );
 
   passport.serializeUser(function (user, cb) {
-    // console.log("IMMA Serialize", user)
     cb(null, {
       id: user.id,
     });
   });
 
   passport.deserializeUser(async function (obj, cb) {
-    // console.log("IMMA Deserialize", obj)
-
     const userDocument = database.doc(`users/${obj.id}`);
     const doc = await userDocument.get();
     const data = doc.data();
 
-    cb(null, {
-      id: doc.id,
-      name: data.name,
-      accessToken: data.accessToken,
-    });
+    cb(null, data);
   });
 };

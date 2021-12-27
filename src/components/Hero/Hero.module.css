@@ -1,5 +1,5 @@
 .Hero {
-  composes: backgrounColorSecondary from global;
+  background-color: var(--metabike-color-secondary);
   min-width: 700px;
 }
 

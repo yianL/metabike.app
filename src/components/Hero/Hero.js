@@ -1,5 +1,5 @@
 import { ReactComponent as StravaButton } from '../../images/btn_strava_connectwith_light.svg';
-import ProfilePicture from '../ProfilePicture';
+import Avatar from '../Avatar';
 import Card from '../Card';
 import styles from './Hero.module.css';
 
@@ -10,14 +10,31 @@ function Hero(props) {
     return <DefaultHero />;
   }
 
-  return <Card></Card>;
+  const { firstname, lastname, avatar } = profile;
+
+  return (
+    <Card className={styles.Hero}>
+      <div>
+        <div>
+          <h1>{firstname}</h1>
+          <h1>{lastname}</h1>
+        </div>
+        <Avatar src={avatar} />
+        <hr />
+        <div>
+          <h2>Total / Virtual miles biked</h2>
+          <h2>Total / Virtual feet climbed</h2>
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 function DefaultHero() {
   return (
     <Card className={styles.Hero}>
       <div className={styles.DefaultHeroContainer}>
-        <ProfilePicture />
+        <Avatar />
         <h1>See how far you've biked in the virtual world!</h1>
         <div className={styles.LinkStrava}>
           <a href="/login/federated/strava" role="button">

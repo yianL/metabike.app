@@ -1,3 +1,10 @@
+:root {
+  --metabike-color-light: #e5ddcb;
+  --metabike-color-dark: #524656;
+  --metabike-color-primary: #96b1aa;
+  --metabike-color-secondary: #a7c5bd;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -8,6 +15,7 @@ body {
   font-family: 'Roboto', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--metabike-color-dark);
 }
 
 code {
@@ -23,16 +31,4 @@ code {
     url('../fonts/lcddot.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
-}
-
-.backgrounColorPrimary {
-  background-color: #e5ddcb;
-}
-
-.backgrounColorSecondary {
-  background-color: #a7c5bd;
-}
-
-.colorPrimary {
-  color: #524656;
 }

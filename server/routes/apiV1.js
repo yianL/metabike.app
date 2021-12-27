@@ -3,7 +3,17 @@ const router = require('express').Router();
 router.get('/me', function (req, res, next) {
   const { user } = req;
   if (user) {
-    res.status(200).json(user);
+    const userResponse = {
+      firstname: user.firstname,
+      lastname: user.lastname,
+      location: user.location,
+      updatedAt: user.updatedAt,
+      avatar: user.avatar,
+      bikes: user.bikes,
+    };
+
+    res.status(200).json(userResponse);
+    return;
   }
 
   res.status(401).json({

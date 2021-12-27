@@ -1,4 +1,4 @@
-const { Firestore } = require('@google-cloud/firestore');
+const { Firestore, FieldValue } = require('@google-cloud/firestore');
 const { FirestoreStore } = require('@google-cloud/connect-firestore');
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -15,10 +15,11 @@ const firestoreDB = isProduction
 
 const store = new FirestoreStore({
   dataset: firestoreDB,
-  kind: 'express-sessions',
+  kind: 'sessions',
 });
 
 module.exports = {
+  FieldValue,
   database: firestoreDB,
   store: store,
 };

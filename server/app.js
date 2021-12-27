@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, '../build')));
 
 app.use(
   session({
-    secret: 'supa secret',
+    secret: process.env.SESSION_SECRET,
     store: store,
     resave: false,
     saveUninitialized: true,
@@ -35,7 +35,26 @@ app.use(passport.session());
 app.use('/api/v1', apiV1Router);
 app.use('/', authRouter);
 
-// Error handler
+// Error handlers
+
+// not found
+app.use(function (req, res, next) {
+  res.status(404);
+
+  res.format({
+    // html: function () {
+    //   res.render('404', { url: req.url })
+    // },
+    json: function () {
+      res.json({ error: 'Not found' });
+    },
+    default: function () {
+      res.type('txt').send('Not found');
+    },
+  });
+});
+
+// error
 app.use(function (err, req, res, next) {
   console.error(err.stack);
   res.send(500, 'Ooops!');
