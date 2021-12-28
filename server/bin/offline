@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../offlineApp');
+
+app.start();
+
+console.log("Offline processor started...");
