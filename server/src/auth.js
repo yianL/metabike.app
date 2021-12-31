@@ -52,7 +52,7 @@ module.exports = function () {
               virtualDistanceMeters: 0,
               totalElevationGainMeters: 0,
               virtualElevationGainMeters: 0,
-              totalTimeOnBikeMinutes: 0,
+              totalTimeOnBikeSeconds: 0,
               totalKudos: 0,
               totalPRSmashed: 0,
             };

@@ -1,4 +1,4 @@
-const { database } = require('./src/firebase');
+const { database, FieldValue } = require('./src/firebase');
 const axios = require('axios').default;
 const moment = require('moment');
 
@@ -27,6 +27,10 @@ async function getAllStravaActivities(req, accessToken) {
       );
       if (response.data && response.data.length > 0) {
         response.data.forEach((activity) => {
+          if (activity.type !== 'Ride' || activity.type !== 'VirtualRide') {
+            return;
+          }
+
           const ref = database.collection('activities').doc(`${activity.id}`);
           batch.set(ref, {
             userId: activity.athlete.id,
@@ -67,26 +71,100 @@ async function processStravaSyncRequest(doc) {
     userId: userId,
   });
 
-  return database.collection('jobs').doc(doc.id).delete();
+  return database.collection('jobs').doc(doc.id).update({
+    finishedAt: FieldValue.serverTimestamp(),
+  });
+}
+
+async function updateStatsFromActivities(doc) {
+  const { userId } = doc.data();
+
+  const userRef = database.doc(`users/${userId}`);
+  const user = await userRef.get();
+  const { bikes } = user.data();
+
+  // reset virtual stats
+  Object.keys(bikes).forEach((key) => {
+    bikes[key].totalElevationGainMeters = 0;
+    bikes[key].totalKudos = 0;
+    bikes[key].totalPRSmashed = 0;
+    bikes[key].totalTimeOnBikeSeconds = 0;
+    bikes[key].virtualDistanceMeters = 0;
+    bikes[key].virtualElevationGainMeters = 0;
+  });
+
+  const allRidesRef = database
+    .collection('activities')
+    .where('userId', '==', userId);
+  const allRides = await allRidesRef.get();
+
+  console.log(
+    `Going to update states for userId=${userId}. Total of ${allRides.size} activities...`
+  );
+
+  allRides.forEach((ride) => {
+    const {
+      distanceMeters,
+      elevationGainMeters,
+      movingTimeSeconds,
+      kudosCount,
+      prCount,
+      gearId,
+      type,
+    } = ride.data();
+    const bike = bikes[gearId];
+
+    if (!bike) {
+      console.warn(
+        `gearId=${gearId} not found for userId=${userId}. Skipping record id=${ride.id}`
+      );
+      return;
+    }
+
+    bike.totalElevationGainMeters += elevationGainMeters;
+    bike.totalKudos += kudosCount;
+    bike.totalPRSmashed += prCount;
+    bike.totalTimeOnBikeSeconds += movingTimeSeconds;
+
+    if (type === 'VirtualRide') {
+      bike.virtualDistanceMeters += distanceMeters;
+      bike.virtualElevationGainMeters += elevationGainMeters;
+    }
+  });
+
+  // persist values back
+  console.log(`Persisting updated stats for userId=${userId}...`);
+  await userRef.update({
+    bikes: bikes,
+  });
+
+  return database.collection('jobs').doc(doc.id).update({
+    finishedAt: FieldValue.serverTimestamp(),
+  });
 }
 
 function start() {
-  return database.collection('jobs').onSnapshot((querySnapshot) => {
-    querySnapshot.docChanges().forEach((change) => {
-      if (change.type === 'added') {
-        console.log('New request: ', change.doc.data());
-        if (change.doc.data().type === 'SyncStravaActivities') {
-          processStravaSyncRequest(change.doc);
+  return database
+    .collection('jobs')
+    .where('finishedAt', '==', null)
+    .onSnapshot((querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          console.log('New request: ', change.doc.id);
+          if (change.doc.data().type === 'SyncStravaActivities') {
+            processStravaSyncRequest(change.doc);
+          } else if (change.doc.data().type === 'UpdateStatsFromActivities') {
+            updateStatsFromActivities(change.doc);
+          }
         }
-      }
-      if (change.type === 'modified') {
-        console.log('Modified request: ', change.doc.data());
-      }
-      if (change.type === 'removed') {
-        console.log('Removed request: ', change.doc.data());
-      }
+        if (change.type === 'modified') {
+          console.log('Modified request: ', change.doc.id);
+        }
+        if (change.type === 'removed') {
+          console.log('Removed request: ', change.doc.id);
+        }
+      });
     });
-  });
 }
 
 module.exports = {
