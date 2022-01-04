@@ -7,9 +7,10 @@ router.get('/me', function (req, res, next) {
       firstname: user.firstname,
       lastname: user.lastname,
       location: user.location,
-      updatedAt: user.updatedAt,
+      updatedAt: user.updatedAt.seconds,
       avatar: user.avatar,
       bikes: user.bikes,
+      summary: user.summary,
     };
 
     res.status(200).json(userResponse);

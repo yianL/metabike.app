@@ -1,5 +1,6 @@
 import { ReactComponent as StravaButton } from '../../images/btn_strava_connectwith_light.svg';
 import Avatar from '../Avatar';
+import { DistanceMetric, ElevationMetric } from '../Metric';
 import Card from '../Card';
 import styles from './Hero.module.css';
 
@@ -10,22 +11,36 @@ function Hero(props) {
     return <DefaultHero />;
   }
 
-  const { firstname, lastname, avatar } = profile;
+  const { firstname, lastname, avatar, summary } = profile;
+  const {
+    totalDistanceMeters,
+    totalElevationGainMeters,
+    totalVirtualDistanceMeters,
+    totalVirtualElevationGainMeters,
+  } = summary;
 
   return (
     <Card className={styles.Hero}>
-      <div>
+      <div className={styles.Header}>
         <div>
           <h1>{firstname}</h1>
           <h1>{lastname}</h1>
         </div>
-        <Avatar src={avatar} />
-        <hr />
-        <div>
-          <h2>Total / Virtual miles biked</h2>
-          <h2>Total / Virtual feet climbed</h2>
-        </div>
+        <Avatar className={styles.Avatar} src={avatar} />
       </div>
+      <hr />
+      <DistanceMetric
+        title="Total distance"
+        showImperial={false}
+        baseValueMeters={totalDistanceMeters}
+        valueMeters={totalVirtualDistanceMeters}
+      />
+      <ElevationMetric
+        title="Total elevation gain"
+        showImperial={false}
+        baseValueMeters={totalElevationGainMeters}
+        valueMeters={totalVirtualElevationGainMeters}
+      />
     </Card>
   );
 }

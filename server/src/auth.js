@@ -60,6 +60,14 @@ module.exports = function () {
           }, {});
 
           await userDocument.set(mappedUserProfile);
+          // add job to the queue
+
+          await database.collection('jobs').add({
+            type: 'SyncStravaActivities',
+            userId: id,
+            startTimestamp: mappedUserProfile.createdAt,
+            finishedAt: null,
+          });
         } else {
           // TODO: update bikes
 

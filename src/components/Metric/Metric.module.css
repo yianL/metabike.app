@@ -1,0 +1,17 @@
+.Metric {
+}
+
+.BarBackground {
+  position: relative;
+  background-color: var(--metabike-color-light);
+  width: 100%;
+  height: 1em;
+}
+
+.Bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: var(--metabike-color-dark);
+  height: 1em;
+}

@@ -46,3 +46,17 @@
     transform: translateY(-5px);
   }
 }
+
+.Header {
+  position: relative;
+}
+.Header h1 {
+  margin: 0 5em 20px 0;
+  text-align: right;
+}
+
+.Header .Avatar {
+  position: absolute;
+  right: -4em;
+  top: -4em;
+}

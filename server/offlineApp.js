@@ -27,7 +27,7 @@ async function getAllStravaActivities(req, accessToken) {
       );
       if (response.data && response.data.length > 0) {
         response.data.forEach((activity) => {
-          if (activity.type !== 'Ride' || activity.type !== 'VirtualRide') {
+          if (!(activity.type === 'Ride' || activity.type === 'VirtualRide')) {
             return;
           }
 
@@ -49,6 +49,7 @@ async function getAllStravaActivities(req, accessToken) {
         await batch.commit();
         return fetchStravaActivities(page + 1);
       }
+
       return;
     } catch (error) {
       console.error(error.toString());
@@ -56,7 +57,7 @@ async function getAllStravaActivities(req, accessToken) {
   };
 
   await fetchStravaActivities(1);
-  console.log(`All done, commiting results...`);
+  console.log(`All done, committing results...`);
 }
 
 async function processStravaSyncRequest(doc) {
@@ -69,6 +70,7 @@ async function processStravaSyncRequest(doc) {
   await database.collection('jobs').add({
     type: 'UpdateStatsFromActivities',
     userId: userId,
+    finishedAt: null,
   });
 
   return database.collection('jobs').doc(doc.id).update({
@@ -134,8 +136,24 @@ async function updateStatsFromActivities(doc) {
 
   // persist values back
   console.log(`Persisting updated stats for userId=${userId}...`);
+
+  const summary = {
+    totalDistanceMeters: 0,
+    totalElevationGainMeters: 0,
+    totalVirtualDistanceMeters: 0,
+    totalVirtualElevationGainMeters: 0,
+  };
+  Object.keys(bikes).forEach((key) => {
+    summary.totalDistanceMeters += bikes[key].totalDistanceMeters;
+    summary.totalElevationGainMeters += bikes[key].totalElevationGainMeters;
+    summary.totalVirtualDistanceMeters += bikes[key].virtualDistanceMeters;
+    summary.totalVirtualElevationGainMeters +=
+      bikes[key].virtualElevationGainMeters;
+  });
+
   await userRef.update({
-    bikes: bikes,
+    bikes,
+    summary,
   });
 
   return database.collection('jobs').doc(doc.id).update({
