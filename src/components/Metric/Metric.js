@@ -14,7 +14,7 @@ export function PortionMetric({ className, title, baseValue, value, unit }) {
       <div className={styles.Title}>
         <h2>{title}</h2>
         <span>
-          {`${baseValue.toLocaleString()} (${value.toLocaleString()})`}
+          {baseValue.toLocaleString()}
           <b data-type="unit">{unit}</b>
         </span>
       </div>
@@ -22,7 +22,7 @@ export function PortionMetric({ className, title, baseValue, value, unit }) {
         <div
           className={styles.Bar}
           style={{ width: `${Math.max(1, percentile)}%` }}
-          data-tip={`${percentile}%`}
+          data-tip={`${percentile}% virtual = ${value.toLocaleString()} ${unit}`}
         />
       </div>
       <ReactTooltip />

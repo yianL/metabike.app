@@ -2,10 +2,11 @@ import { ReactComponent as StravaButton } from '../../images/btn_strava_connectw
 import Avatar from '../Avatar';
 import { DistanceMetric, ElevationMetric } from '../Metric';
 import Card from '../Card';
+import Toggle from '../Toggle';
 import styles from './Hero.module.css';
 
 function Hero(props) {
-  const { profile } = props;
+  const { profile, onUnitChange, unit } = props;
 
   if (!profile) {
     return <DefaultHero />;
@@ -18,6 +19,7 @@ function Hero(props) {
     totalVirtualDistanceMeters,
     totalVirtualElevationGainMeters,
   } = summary;
+  const showImperial = unit === 'mi';
 
   return (
     <Card className={styles.Hero}>
@@ -36,15 +38,19 @@ function Hero(props) {
         </div>
       ) : (
         <div>
+          <div>
+            <div>Unit:</div>
+            <Toggle value={unit} onChange={onUnitChange} />
+          </div>
           <DistanceMetric
             title="Total distance"
-            showImperial={false}
+            showImperial={showImperial}
             baseValueMeters={totalDistanceMeters}
             valueMeters={totalVirtualDistanceMeters}
           />
           <ElevationMetric
             title="Total elevation gain"
-            showImperial={false}
+            showImperial={showImperial}
             baseValueMeters={totalElevationGainMeters}
             valueMeters={totalVirtualElevationGainMeters}
           />

@@ -17,7 +17,7 @@ function BikeAvatar({ primary }) {
   );
 }
 
-function BikeCard({ bike, showImperial }) {
+function BikeCard({ bike, unit }) {
   const {
     name,
     totalDistanceMeters,
@@ -30,6 +30,8 @@ function BikeCard({ bike, showImperial }) {
     primary,
     retired,
   } = bike;
+  const showImperial = unit === 'mi';
+
   return (
     <Card className={styles.BikeCard}>
       <BikeAvatar primary={primary} />

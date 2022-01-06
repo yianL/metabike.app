@@ -26,8 +26,10 @@ class App extends React.Component {
     this.state = {
       initialized: false,
       profile: undefined,
+      unit: 'km',
     };
     this.onPollResponse = this.onPollResponse.bind(this);
+    this.onUnitChange = this.onUnitChange.bind(this);
 
     this.poller = new Poller(
       {
@@ -61,11 +63,20 @@ class App extends React.Component {
     });
   }
 
+  onUnitChange() {
+    const { unit } = this.state;
+
+    this.setState({
+      unit: unit === 'km' ? 'mi' : 'km',
+    });
+  }
+
   renderBikes(bikes) {
     if (!bikes) {
       return null;
     }
 
+    const { unit } = this.state;
     const bikesArr = Object.keys(bikes)
       .reduce((prev, curr) => {
         prev.push({ ...bikes[curr], key: curr });
@@ -76,14 +87,14 @@ class App extends React.Component {
     return (
       <div>
         {bikesArr.map((bike) => (
-          <BikeCard key={bike.key} bike={bike} />
+          <BikeCard key={bike.key} bike={bike} unit={unit} />
         ))}
       </div>
     );
   }
 
   render() {
-    const { profile, initialized } = this.state;
+    const { profile, initialized, unit } = this.state;
     const bikes =
       profile &&
       profile.syncStatus.status !== 'PendingInitialSync' &&
@@ -91,7 +102,13 @@ class App extends React.Component {
 
     return (
       <div className={styles.App}>
-        {initialized && <Hero profile={profile} />}
+        {initialized && (
+          <Hero
+            profile={profile}
+            onUnitChange={this.onUnitChange}
+            unit={unit}
+          />
+        )}
         {this.renderBikes(bikes)}
         <Footer />
         <ToastContainer
