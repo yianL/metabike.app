@@ -1,5 +1,15 @@
 const router = require('express').Router();
 
+function getStatus(user) {
+  const { stravaCursor } = user;
+
+  if (stravaCursor.lastEventTimestamp === null) {
+    return 'PendingInitialSync';
+  }
+
+  return stravaCursor.syncInProgress ? 'Syncing' : 'Synced';
+}
+
 router.get('/me', function (req, res, next) {
   const { user } = req;
   if (user) {
@@ -11,6 +21,12 @@ router.get('/me', function (req, res, next) {
       avatar: user.avatar,
       bikes: user.bikes,
       summary: user.summary,
+      syncStatus: {
+        status: getStatus(user),
+        lastEventTimestamp: user.stravaCursor.lastEventTimestamp
+          ? user.stravaCursor.lastEventTimestamp.seconds
+          : null,
+      },
     };
 
     res.status(200).json(userResponse);

@@ -1,1 +1,7 @@
-export { Metric, DistanceMetric, ElevationMetric } from './Metric';
+export {
+  SimpleMetric,
+  PortionMetric,
+  DurationMetric,
+  DistanceMetric,
+  ElevationMetric,
+} from './Metric';

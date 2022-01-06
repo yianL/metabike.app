@@ -11,7 +11,7 @@ function Hero(props) {
     return <DefaultHero />;
   }
 
-  const { firstname, lastname, avatar, summary } = profile;
+  const { firstname, lastname, avatar, summary, syncStatus } = profile;
   const {
     totalDistanceMeters,
     totalElevationGainMeters,
@@ -29,18 +29,27 @@ function Hero(props) {
         <Avatar className={styles.Avatar} src={avatar} />
       </div>
       <hr />
-      <DistanceMetric
-        title="Total distance"
-        showImperial={false}
-        baseValueMeters={totalDistanceMeters}
-        valueMeters={totalVirtualDistanceMeters}
-      />
-      <ElevationMetric
-        title="Total elevation gain"
-        showImperial={false}
-        baseValueMeters={totalElevationGainMeters}
-        valueMeters={totalVirtualElevationGainMeters}
-      />
+      {syncStatus.status === 'PendingInitialSync' ? (
+        <div>
+          Fetching data from Strava and crunching numbers for the first time.
+          This may take a while...
+        </div>
+      ) : (
+        <div>
+          <DistanceMetric
+            title="Total distance"
+            showImperial={false}
+            baseValueMeters={totalDistanceMeters}
+            valueMeters={totalVirtualDistanceMeters}
+          />
+          <ElevationMetric
+            title="Total elevation gain"
+            showImperial={false}
+            baseValueMeters={totalElevationGainMeters}
+            valueMeters={totalVirtualElevationGainMeters}
+          />
+        </div>
+      )}
     </Card>
   );
 }

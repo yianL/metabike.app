@@ -154,6 +154,10 @@ async function updateStatsFromActivities(doc) {
   await userRef.update({
     bikes,
     summary,
+    stravaCursor: {
+      syncInProgress: false,
+      lastEventTimestamp: FieldValue.serverTimestamp(),
+    },
   });
 
   return database.collection('jobs').doc(doc.id).update({

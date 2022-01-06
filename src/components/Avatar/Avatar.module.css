@@ -1,5 +1,5 @@
 .Avatar {
-  background-color: #eb7b59;
+  background-color: var(--metabike-color-contrast);
   width: 10rem;
   height: 10rem;
   border-radius: 8px;

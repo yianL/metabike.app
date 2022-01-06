@@ -1,17 +1,23 @@
 import ReactTooltip from 'react-tooltip';
+import cn from 'classnames';
 import styles from './Metric.module.css';
 
 const meterToMile = (m) => (m / 1000) * 0.621;
-const meterToKm = (m) => (m / 1000) * 0.621;
+const meterToKm = (m) => m / 1000;
 const meterToFeet = (m) => m * 3.28;
 
-export function Metric({ className, title, baseValue, value, unit }) {
+export function PortionMetric({ className, title, baseValue, value, unit }) {
   const percentile = Math.round((value / baseValue) * 100);
 
   return (
-    <div className={`${styles.Metric} ${className}`}>
-      <h2>{title}</h2>
-      <span>{`${baseValue.toLocaleString()} (${value.toLocaleString()}) ${unit}`}</span>
+    <div className={cn(styles.Metric, className)}>
+      <div className={styles.Title}>
+        <h2>{title}</h2>
+        <span>
+          {`${baseValue.toLocaleString()} (${value.toLocaleString()})`}
+          <b data-type="unit">{unit}</b>
+        </span>
+      </div>
       <div className={styles.BarBackground}>
         <div
           className={styles.Bar}
@@ -20,6 +26,55 @@ export function Metric({ className, title, baseValue, value, unit }) {
         />
       </div>
       <ReactTooltip />
+    </div>
+  );
+}
+
+export function SimpleMetric({ className, title, value, unit }) {
+  return (
+    <div className={cn(styles.Metric, className)}>
+      <div className={styles.Title}>
+        <h2>{title}</h2>
+        <span>
+          {value.toLocaleString()}
+          <b data-type="unit">{unit}</b>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function DurationMetric({ className, title, valueSeconds }) {
+  let base = valueSeconds;
+  const seconds = base % 60;
+  base = Math.floor(base / 60);
+  const minutes = base % 60;
+  base = Math.floor(base / 60);
+  const hours = base;
+
+  return (
+    <div className={cn(styles.Metric, className)}>
+      <div className={styles.Title}>
+        <h2>{title}</h2>
+        {hours > 0 && (
+          <span>
+            {hours.toLocaleString()}
+            <b data-type="unit">h</b>
+          </span>
+        )}
+        {hours > 0 && (
+          <span>
+            {minutes}
+            <b data-type="unit">m</b>
+          </span>
+        )}
+        {hours > 0 && (
+          <span>
+            {seconds}
+            <b data-type="unit">s</b>
+          </span>
+        )}
+      </div>
     </div>
   );
 }
@@ -40,7 +95,7 @@ export function DistanceMetric({
   const unit = showImperial ? 'mi' : 'km';
 
   return (
-    <Metric
+    <PortionMetric
       className={className}
       title={title}
       baseValue={Number.parseFloat(baseValue.toFixed(1))}
@@ -64,7 +119,7 @@ export function ElevationMetric({
   const unit = showImperial ? 'ft' : 'm';
 
   return (
-    <Metric
+    <PortionMetric
       className={className}
       title={title}
       baseValue={Number.parseFloat(baseValue.toFixed(1))}

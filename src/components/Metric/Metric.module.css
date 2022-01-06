@@ -1,9 +1,33 @@
 .Metric {
+  margin-bottom: 20px;
+  min-width: 500px;
+}
+
+.Metric:last-child {
+  margin-bottom: 0;
+}
+
+.Title {
+  display: flex;
+  margin-bottom: 5px;
+  align-items: baseline;
+}
+
+.Title h2 {
+  margin: 0;
+  font-size: 1.2em;
+  width: 220px;
+  text-align: left;
+}
+
+.Title [data-type='unit'] {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .BarBackground {
   position: relative;
-  background-color: var(--metabike-color-light);
+  background-color: var(--metabike-color-primary);
   width: 100%;
   height: 1em;
 }
@@ -12,6 +36,6 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-color: var(--metabike-color-dark);
+  background-color: var(--metabike-color-contrast);
   height: 1em;
 }

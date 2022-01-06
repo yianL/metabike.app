@@ -38,8 +38,8 @@ module.exports = function () {
             moment(_json.created_at).valueOf()
           );
           mappedUserProfile.stravaCursor = {
-            syncPending: true,
-            lastEventTimestamp: 0,
+            syncInProgress: true,
+            lastEventTimestamp: null,
           };
           mappedUserProfile.bikes = _json.bikes.reduce((prev, curr) => {
             prev[curr.id] = {
@@ -55,6 +55,12 @@ module.exports = function () {
               totalTimeOnBikeSeconds: 0,
               totalKudos: 0,
               totalPRSmashed: 0,
+            };
+            mappedUserProfile.summary = {
+              totalDistanceMeters: 0,
+              totalElevationGainMeters: 0,
+              totalVirtualDistanceMeters: 0,
+              totalVirtualElevationGainMeters: 0,
             };
             return prev;
           }, {});

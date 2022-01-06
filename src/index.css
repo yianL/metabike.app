@@ -1,8 +1,10 @@
 :root {
   --metabike-color-light: #e5ddcb;
+  --metabike-color-light2: #e9e4d8;
   --metabike-color-dark: #524656;
   --metabike-color-primary: #96b1aa;
   --metabike-color-secondary: #a7c5bd;
+  --metabike-color-contrast: #eb7b59;
 }
 
 * {
