@@ -68,7 +68,10 @@ function DefaultHero() {
     <Card className={styles.Hero}>
       <div className={styles.DefaultHeroContainer}>
         <Avatar />
-        <h1>See how far you've biked in the virtual world!</h1>
+        <h1>
+          See how far you've biked in the virtual world <br />& more interesting
+          stats PER BIKE!
+        </h1>
         <div className={styles.LinkStrava}>
           <a href="/login/federated/strava" role="button">
             <StravaButton className={styles.StravaButton} />

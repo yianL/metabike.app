@@ -5,7 +5,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const firestoreDB = isProduction
   ? new Firestore({
       projectId: 'metabike-app',
-      keyFilename: '/Users/a.lai/.gcp/yian-dev-0f3533367dfc.json', // TODO: changeme
+      keyFilename: process.env.FIRESTORE_KEY_PATH,
     })
   : new Firestore({
       projectId: 'metabike-app',
