@@ -2,6 +2,11 @@ const { Firestore, FieldValue } = require('@google-cloud/firestore');
 const { FirestoreStore } = require('@google-cloud/connect-firestore');
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction) {
+  console.log(`Using production config credentials...`);
+}
+
 const firestoreDB = isProduction
   ? new Firestore({
       projectId: 'metabike-app',

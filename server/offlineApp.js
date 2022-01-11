@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { database, FieldValue } = require('./src/firebase');
 const axios = require('axios').default;
 const moment = require('moment');

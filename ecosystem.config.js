@@ -5,7 +5,7 @@ module.exports = {
       script: './server/bin/www',
       env: {
         PORT: 6000,
-        PUBLIC_URL: 'https://test.yian.dev',
+        PUBLIC_URL: 'https://metabike.app',
         NODE_ENV: 'production'
       }
     },
