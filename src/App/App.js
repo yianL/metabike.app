@@ -3,6 +3,7 @@ import Hero from '../components/Hero';
 import BikeCard from '../components/BikeCard';
 import Footer from '../components/Footer';
 import Poller from '../utils/poller';
+import { setUser } from '../utils/firebase';
 import styles from './App.module.css';
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -41,6 +42,10 @@ class App extends React.Component {
 
   async componentDidMount() {
     const me = await getMe();
+    if (me) {
+      setUser(me.id);
+    }
+
     this.setState({
       initialized: true,
       profile: me,

@@ -3,6 +3,7 @@ import Avatar from '../Avatar';
 import { DistanceMetric, ElevationMetric } from '../Metric';
 import Card from '../Card';
 import Toggle from '../Toggle';
+import Spinner from '../Spinner';
 import styles from './Hero.module.css';
 
 function Hero(props) {
@@ -32,14 +33,16 @@ function Hero(props) {
       </div>
       <hr />
       {syncStatus.status === 'PendingInitialSync' ? (
-        <div>
-          Fetching data from Strava and crunching numbers for the first time.
-          This may take a while...
+        <div className={styles.Center}>
+          <p>
+            Fetching data from Strava and crunching numbers for the first time.
+          </p>
+          <p>This may take a while. The page will refresh automatically.</p>
+          <Spinner />
         </div>
       ) : (
         <div>
-          <div>
-            <div>Unit:</div>
+          <div className={styles.Toggle}>
             <Toggle value={unit} onChange={onUnitChange} />
           </div>
           <DistanceMetric

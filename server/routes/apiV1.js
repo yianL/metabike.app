@@ -14,6 +14,7 @@ router.get('/me', function (req, res, next) {
   const { user } = req;
   if (user) {
     const userResponse = {
+      id: user.id,
       firstname: user.firstname,
       lastname: user.lastname,
       location: user.location,

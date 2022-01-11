@@ -95,6 +95,7 @@ module.exports = function () {
     const userDocument = database.doc(`users/${obj.id}`);
     const doc = await userDocument.get();
     const data = doc.data();
+    data.id = obj.id;
 
     cb(null, data);
   });

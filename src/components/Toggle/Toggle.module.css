@@ -18,33 +18,33 @@
 .knobs:before {
   content: '';
   left: 4px;
-  background-color: #03a9f4;
+  background-color: var(--metabike-color-primary);
 }
 
 .knobs:after {
   content: 'mi';
   right: 4px;
-  color: #4e4e4e;
+  color: var(--metabike-color-dark);
 }
 
 .knobs span {
   display: inline-block;
   left: 8px;
-  color: #fff;
+  color: var(--metabike-color-white);
   z-index: 1;
 }
 
 .checkbox:checked + .knobs span {
-  color: #4e4e4e;
+  color: var(--metabike-color-dark);
 }
 
 .checkbox:checked + .knobs:before {
   left: 48px;
-  background-color: #f44336;
+  background-color: var(--metabike-color-contrast);
 }
 
 .checkbox:checked + .knobs:after {
-  color: #fff;
+  color: var(--metabike-color-white);
 }
 
 .checkbox:checked ~ .layer {
@@ -68,7 +68,7 @@
 
 .layer {
   width: 100%;
-  background-color: #ebf7fc;
+  background-color: var(--metabike-color-secondary-light);
   transition: 0.3s ease all;
   z-index: 1;
 }
