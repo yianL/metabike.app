@@ -2,6 +2,7 @@ import axios from 'axios';
 import Hero from '../components/Hero';
 import BikeCard from '../components/BikeCard';
 import Footer from '../components/Footer';
+import Background from '../components/Background';
 import Poller from '../utils/poller';
 import { setUser } from '../utils/firebase';
 import styles from './App.module.css';
@@ -116,6 +117,7 @@ class App extends React.Component {
         )}
         {this.renderBikes(bikes)}
         <Footer />
+        <Background />
         <ToastContainer
           position="bottom-right"
           autoClose={5000}

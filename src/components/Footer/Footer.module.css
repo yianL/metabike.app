@@ -1,34 +1,15 @@
 .Footer {
-  color: #888888;
-}
-
-.Brand {
+  color: #aaa;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-
-  position: fixed;
-  left: 10px;
-  bottom: 0;
-  font-family: 'lcddot';
-  font-size: 3em;
-  user-select: none;
+  margin: 10px 0 30px;
 }
 
-.StravaLogo {
-  width: 5rem;
-  opacity: 0.6;
+.Footer :global(.material-icons) {
+  margin: 0 5px;
 }
 
-.BikeLogo {
-  position: fixed;
-  right: -50px;
-  bottom: -130px;
-  opacity: 0.1;
-}
-
-.BikeLogo svg {
-  fill: #888888;
-  width: 400px;
-  height: 400px;
+.Footer a {
+  text-decoration: none;
+  color: #999;
 }
