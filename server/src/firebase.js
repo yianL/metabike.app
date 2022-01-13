@@ -24,6 +24,7 @@ const store = new FirestoreStore({
 });
 
 module.exports = {
+  Firestore,
   FieldValue,
   database: firestoreDB,
   store: store,

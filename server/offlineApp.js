@@ -1,11 +1,24 @@
 require('dotenv').config();
 
-const { database, FieldValue } = require('./src/firebase');
-const axios = require('axios').default;
+const { Firestore, database, FieldValue } = require('./src/firebase');
+const StravaApi = require('./src/stravaAPI');
 const moment = require('moment');
 
-const STRAVA_API_V3_ENDPOINT = 'https://www.strava.com/api/v3';
-const STRAVA_API_PAGE_SIZE = 100;
+async function refreshStravaAPIToken({ userId }) {
+  console.log(`Will refresh accessToken for user=${userId}`);
+  const currentUserRef = await database.doc(`users/${userId}`);
+  const user = await currentUserRef.get();
+  const response = await StravaApi.renewToken({
+    refreshToken: user.data().refreshToken,
+  });
+
+  await currentUserRef.update({
+    accessToken: response.access_token,
+    refreshToken: response.refresh_token,
+  });
+
+  return response.access_token;
+}
 
 async function getAllStravaActivities(req, accessToken) {
   const { userId, startTimestamp } = req;
@@ -14,21 +27,14 @@ async function getAllStravaActivities(req, accessToken) {
     try {
       console.log(`Fetching activities for userId=${userId} page=${page}...`);
       const batch = database.batch();
-      const response = await axios.get(
-        `${STRAVA_API_V3_ENDPOINT}/athlete/activities`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          params: {
-            after: startTimestamp.seconds,
-            page: page,
-            per_page: STRAVA_API_PAGE_SIZE,
-          },
-        }
-      );
-      if (response.data && response.data.length > 0) {
-        response.data.forEach((activity) => {
+      const activities = await StravaApi.getActivities({
+        accessToken,
+        startTimestamp,
+        page,
+      });
+
+      if (activities && activities.length > 0) {
+        activities.forEach((activity) => {
           if (!(activity.type === 'Ride' || activity.type === 'VirtualRide')) {
             return;
           }
@@ -64,10 +70,9 @@ async function getAllStravaActivities(req, accessToken) {
 
 async function processStravaSyncRequest(doc) {
   const { userId } = doc.data();
-  const userDoc = database.doc(`users/${userId}`);
-  const user = await userDoc.get();
 
-  await getAllStravaActivities(doc.data(), user.data().accessToken);
+  const accessToken = await refreshStravaAPIToken({ userId });
+  await getAllStravaActivities(doc.data(), accessToken);
 
   await database.collection('jobs').add({
     type: 'UpdateStatsFromActivities',
@@ -99,7 +104,8 @@ async function updateStatsFromActivities(doc) {
 
   const allRidesRef = database
     .collection('activities')
-    .where('userId', '==', userId);
+    .where('userId', '==', userId)
+    .orderBy('startTimestamp');
   const allRides = await allRidesRef.get();
 
   console.log(
@@ -153,15 +159,25 @@ async function updateStatsFromActivities(doc) {
       bikes[key].virtualElevationGainMeters;
   });
 
+  const latestRide = allRides.docs[allRides.size - 1].data();
   await userRef.update({
     bikes,
     summary,
     stravaCursor: {
       syncInProgress: false,
-      lastEventTimestamp: FieldValue.serverTimestamp(),
+      lastEventTimestamp: Firestore.Timestamp.fromMillis(
+        latestRide.startTimestamp
+      ),
     },
+    updatedAt: FieldValue.serverTimestamp(),
   });
 
+  return database.collection('jobs').doc(doc.id).update({
+    finishedAt: FieldValue.serverTimestamp(),
+  });
+}
+
+async function ignoreJob(doc) {
   return database.collection('jobs').doc(doc.id).update({
     finishedAt: FieldValue.serverTimestamp(),
   });
@@ -175,16 +191,21 @@ function start() {
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
           console.log('New request: ', change.doc.id);
-          if (change.doc.data().type === 'SyncStravaActivities') {
-            processStravaSyncRequest(change.doc);
-          } else if (change.doc.data().type === 'UpdateStatsFromActivities') {
-            updateStatsFromActivities(change.doc);
+          const { type } = change.doc.data();
+          switch (type) {
+            case 'SyncStravaActivities':
+              processStravaSyncRequest(change.doc);
+              break;
+            case 'UpdateStatsFromActivities':
+              updateStatsFromActivities(change.doc);
+              break;
+            default:
+              console.log(`Ignoring unrecognized job. type=${type}...`);
+              ignoreJob(change.doc);
           }
-        }
-        if (change.type === 'modified') {
+        } else if (change.type === 'modified') {
           console.log('Modified request: ', change.doc.id);
-        }
-        if (change.type === 'removed') {
+        } else if (change.type === 'removed') {
           console.log('Removed request: ', change.doc.id);
         }
       });
