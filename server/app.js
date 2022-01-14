@@ -15,6 +15,10 @@ require('./src/auth')();
 
 const app = express();
 
+// general config
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -57,7 +61,8 @@ app.use(function (req, res, next) {
 // error
 app.use(function (err, req, res, next) {
   console.error(err.stack);
-  res.send(500, 'Ooops!');
+  res.status(err.status || 500);
+  res.render('error', { error: err });
 });
 
 module.exports = app;

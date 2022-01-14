@@ -43,15 +43,12 @@ class App extends React.Component {
 
   async componentDidMount() {
     const me = await getMe();
-    if (me) {
-      setUser(me.id);
-    }
-
     this.setState({
       initialized: true,
       profile: me,
     });
-    if (me.syncStatus.status !== 'Synced') {
+    if (me && me.syncStatus.status !== 'Synced') {
+      setUser(me.id);
       this.poller.start();
     }
   }
