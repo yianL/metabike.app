@@ -23,7 +23,7 @@ router.get(
       !acceptedPermissions.includes('profile:read_all') ||
       !acceptedPermissions.includes('activity:read_all')
     ) {
-      next(new Error('Please accept all permissions to continue...'));
+      next(new Error('Please accept all permissions to continue'));
       return;
     }
 

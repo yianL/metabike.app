@@ -31,13 +31,34 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div class="card">
-      <h2>Error: <%= error.message %></h2>
+      <h2>Error: <%= error.message %>...</h2>
       <% if (settings['verbose errors']) { %>
         <pre><%= error.stack %></pre>
       <% } %>
 
       <a href="/">Back</a>
     </div>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-app.js";
+      import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/9.6.3/firebase-analytics.js";
+      const firebaseConfig = {
+        apiKey: "AIzaSyCebwIFccWscqdPcrH2H7ACB-uwukOYZ9o",
+        authDomain: "metabike-app.firebaseapp.com",
+        projectId: "metabike-app",
+        storageBucket: "metabike-app.appspot.com",
+        messagingSenderId: "85837852395",
+        appId: "1:85837852395:web:7245199aee2d43513c18ae",
+        measurementId: "G-Z7PT0Y7SZF"
+      };
 
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      window.analytics = analytics;
+      window.logEvent = logEvent;
+      logEvent(analytics, 'error_page', {
+        code: '<%= error.status %>',
+        message: '<%= error.message %>',
+      })
+    </script>
   </body>
 </html>
