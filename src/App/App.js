@@ -1,3 +1,4 @@
+import React from 'react';
 import axios from 'axios';
 import Hero from '../components/Hero';
 import BikeCard from '../components/BikeCard';
@@ -7,16 +8,14 @@ import Poller from '../utils/poller';
 import { setUser } from '../utils/firebase';
 import styles from './App.module.css';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import React from 'react';
 
 async function getMe() {
   try {
     const response = await axios.get('/api/v1/me');
     return response.data;
   } catch (err) {
-    // toast.error(err.toString());
     return undefined;
   }
 }
@@ -32,6 +31,7 @@ class App extends React.Component {
     };
     this.onPollResponse = this.onPollResponse.bind(this);
     this.onUnitChange = this.onUnitChange.bind(this);
+    this.onStartSync = this.onStartSync.bind(this);
 
     this.poller = new Poller(
       {
@@ -51,7 +51,7 @@ class App extends React.Component {
       initialized: true,
       profile: me,
     });
-    if (me.syncStatus.status === 'PendingInitialSync') {
+    if (me.syncStatus.status !== 'Synced') {
       this.poller.start();
     }
   }
@@ -61,7 +61,7 @@ class App extends React.Component {
   }
 
   onPollResponse(data) {
-    if (data.syncStatus.status !== 'PendingInitialSync') {
+    if (data.syncStatus.status === 'Synced') {
       this.poller.stop();
     }
     this.setState({
@@ -75,6 +75,24 @@ class App extends React.Component {
     this.setState({
       unit: unit === 'km' ? 'mi' : 'km',
     });
+  }
+
+  async onStartSync() {
+    try {
+      const { profile } = this.state;
+      await axios.post('/api/v1/me/resync');
+      this.setState({
+        profile: {
+          ...profile,
+          syncStatus: {
+            status: 'Syncing',
+          },
+        },
+      });
+      this.poller.start();
+    } catch (err) {
+      return undefined;
+    }
   }
 
   renderBikes(bikes) {
@@ -112,6 +130,7 @@ class App extends React.Component {
           <Hero
             profile={profile}
             onUnitChange={this.onUnitChange}
+            onStartSync={this.onStartSync}
             unit={unit}
           />
         )}

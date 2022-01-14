@@ -6,6 +6,7 @@
   --metabike-color-primary: #96b1aa;
   --metabike-color-secondary: #a7c5bd;
   --metabike-color-secondary-light: #d6e9e4;
+  --metabike-color-secondary-light-2: #c7ddd6;
   --metabike-color-contrast: #eb7b59;
   --metabike-color-white: #eee;
 }
@@ -36,4 +37,17 @@ code {
     url('../fonts/lcddot.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+}
+
+.spin {
+  animation: spin 2.4s linear 0s infinite reverse;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

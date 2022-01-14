@@ -1,3 +1,5 @@
+import cn from 'classnames';
+import ReactTooltip from 'react-tooltip';
 import { ReactComponent as StravaButton } from '../../images/btn_strava_connectwith_light.svg';
 import Avatar from '../Avatar';
 import { DistanceMetric, ElevationMetric } from '../Metric';
@@ -5,15 +7,17 @@ import Card from '../Card';
 import Toggle from '../Toggle';
 import Spinner from '../Spinner';
 import styles from './Hero.module.css';
+import moment from 'moment';
 
 function Hero(props) {
-  const { profile, onUnitChange, unit } = props;
+  const { profile, onUnitChange, onStartSync, unit } = props;
 
   if (!profile) {
     return <DefaultHero />;
   }
 
-  const { firstname, lastname, avatar, summary, syncStatus } = profile;
+  const { firstname, lastname, avatar, summary, syncStatus, updatedAt } =
+    profile;
   const {
     totalDistanceMeters,
     totalElevationGainMeters,
@@ -21,6 +25,12 @@ function Hero(props) {
     totalVirtualElevationGainMeters,
   } = summary;
   const showImperial = unit === 'mi';
+  const lastUpdated = moment
+    .duration(moment.now() - updatedAt * 1000)
+    .humanize();
+  const lastUpdatedDate = moment(updatedAt * 1000).format(
+    'MMM Do YYYY, h:mm:ssa'
+  );
 
   return (
     <Card className={styles.Hero}>
@@ -42,7 +52,21 @@ function Hero(props) {
         </div>
       ) : (
         <div>
-          <div className={styles.Toggle}>
+          <div className={styles.Actions}>
+            <button
+              className={styles.Button}
+              onClick={onStartSync}
+              disabled={syncStatus.status === 'Syncing'}
+            >
+              <span
+                className={cn('material-icons', {
+                  spin: syncStatus.status === 'Syncing',
+                })}
+              >
+                sync
+              </span>
+              Sync
+            </button>
             <Toggle value={unit} onChange={onUnitChange} />
           </div>
           <DistanceMetric
@@ -59,6 +83,11 @@ function Hero(props) {
           />
         </div>
       )}
+      <div className={styles.Footer}>
+        <b>Last Updated: </b>
+        <span data-tip={lastUpdatedDate}>{`${lastUpdated} ago`}</span>
+      </div>
+      <ReactTooltip />
     </Card>
   );
 }
