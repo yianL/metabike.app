@@ -26,6 +26,7 @@
   },
   "proxy": "http://localhost:3001",
   "scripts": {
+    "emulator": "firebase emulators:start --import=./.firebaseData/ --export-on-exit",
     "devServer": "PORT=3001 node server/bin/www",
     "start": "react-scripts start",
     "build": "react-scripts build",

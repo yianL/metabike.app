@@ -94,6 +94,7 @@ async function updateStatsFromActivities(doc) {
 
   // reset virtual stats
   Object.keys(bikes).forEach((key) => {
+    bikes[key].totalDistanceMeters = 0;
     bikes[key].totalElevationGainMeters = 0;
     bikes[key].totalKudos = 0;
     bikes[key].totalPRSmashed = 0;
@@ -112,6 +113,13 @@ async function updateStatsFromActivities(doc) {
     `Going to update states for userId=${userId}. Total of ${allRides.size} activities...`
   );
 
+  const summary = {
+    totalDistanceMeters: 0,
+    totalElevationGainMeters: 0,
+    totalVirtualDistanceMeters: 0,
+    totalVirtualElevationGainMeters: 0,
+  };
+
   allRides.forEach((ride) => {
     const {
       distanceMeters,
@@ -124,6 +132,9 @@ async function updateStatsFromActivities(doc) {
     } = ride.data();
     const bike = bikes[gearId];
 
+    summary.totalDistanceMeters += distanceMeters;
+    summary.totalElevationGainMeters += elevationGainMeters;
+
     if (!bike) {
       console.warn(
         `gearId=${gearId} not found for userId=${userId}. Skipping record id=${ride.id}`
@@ -131,6 +142,7 @@ async function updateStatsFromActivities(doc) {
       return;
     }
 
+    bike.totalDistanceMeters += distanceMeters;
     bike.totalElevationGainMeters += elevationGainMeters;
     bike.totalKudos += kudosCount;
     bike.totalPRSmashed += prCount;
@@ -139,25 +151,13 @@ async function updateStatsFromActivities(doc) {
     if (type === 'VirtualRide') {
       bike.virtualDistanceMeters += distanceMeters;
       bike.virtualElevationGainMeters += elevationGainMeters;
+      summary.totalVirtualDistanceMeters += distanceMeters;
+      summary.totalVirtualElevationGainMeters += elevationGainMeters;
     }
   });
 
   // persist values back
   console.log(`Persisting updated stats for userId=${userId}...`);
-
-  const summary = {
-    totalDistanceMeters: 0,
-    totalElevationGainMeters: 0,
-    totalVirtualDistanceMeters: 0,
-    totalVirtualElevationGainMeters: 0,
-  };
-  Object.keys(bikes).forEach((key) => {
-    summary.totalDistanceMeters += bikes[key].totalDistanceMeters;
-    summary.totalElevationGainMeters += bikes[key].totalElevationGainMeters;
-    summary.totalVirtualDistanceMeters += bikes[key].virtualDistanceMeters;
-    summary.totalVirtualElevationGainMeters +=
-      bikes[key].virtualElevationGainMeters;
-  });
 
   const latestRide = allRides.docs[allRides.size - 1].data();
   await userRef.update({

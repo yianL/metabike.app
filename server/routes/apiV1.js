@@ -2,7 +2,7 @@ const router = require('express').Router();
 const SyncController = require('../src/syncController');
 
 function getStatus(user) {
-  const { stravaCursor } = user;
+  const { stravaCursor = {} } = user;
 
   if (stravaCursor.lastEventTimestamp === null) {
     return 'PendingInitialSync';
